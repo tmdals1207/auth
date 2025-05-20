@@ -64,5 +64,8 @@ jobs:
             sleep 3
           done
 
-      - name: Build with Gradle
+      - name: Build with Gradle Wrapper
         run: ./gradlew build
+        env:
+          SPRING_CONFIG_LOCATION: file:./src/main/resources/application.properties
+
