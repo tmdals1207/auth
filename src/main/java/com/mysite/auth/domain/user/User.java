@@ -1,4 +1,4 @@
-package com.mysite.auth.entity;
+package com.mysite.auth.domain.user;
 
 import com.mysite.auth.eNum.UserRole;
 import jakarta.persistence.*;
