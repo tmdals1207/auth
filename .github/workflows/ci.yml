@@ -37,6 +37,14 @@ jobs:
       - name: Install MySQL Client
         run: sudo apt-get update && sudo apt-get install -y mysql-client
 
+
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: 'auth'
+          mysql user: 'root'
+          mysql password: '0000'
+
       - name: Wait for MySQL to be ready (real query)
         run: |
           for i in {1..10}; do
