@@ -30,6 +30,15 @@ jobs:
           mysql user: 'root'
           mysql password: '0000'
 
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            nc -z localhost 3306 && echo "MySQL is up" && exit 0
+            sleep 2
+          done
+          echo "MySQL did not start in time." && exit 1
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
 
@@ -37,30 +46,28 @@ jobs:
         id: slug
         run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      - name: Create application.properties
+      - name: Create application.properties for local profile
         run: |
           mkdir -p ./src/main/resources
           cat <<EOT > ./src/main/resources/application.properties
           spring.application.name=auth
           spring.config.import=classpath:application-secret.properties
-          
-          spring.datasource.url=jdbc:mysql://mysql:3306/auth
+
+          spring.datasource.url=jdbc:mysql://localhost:3306/auth
           spring.datasource.username=root
           spring.datasource.password=0000
-          
+
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=true
           spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
           EOT
-          
+
           cat <<EOT > ./src/main/resources/application-secret.properties
           jwt.secret=${{ secrets.JWT_SECRET }}
           EOT
-
-        shell: bash
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build -Dspring.profiles.active=test
