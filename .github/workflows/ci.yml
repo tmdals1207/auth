@@ -19,7 +19,7 @@ jobs:
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
-          --health-timeout=5s
+          --health-timeout=5s 
           --health-retries=10
 
     steps:
@@ -51,7 +51,6 @@ jobs:
           cat <<EOT > ./src/main/resources/application.properties
           spring.application.name=auth
 
-        # application-secret.properties
           spring.config.import=classpath:application-secret.properties
           
           spring.datasource.url=jdbc:mysql://localhost:3306/auth
