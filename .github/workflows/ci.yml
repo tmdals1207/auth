@@ -43,16 +43,6 @@ jobs:
           mysql user: 'root'
           mysql password: '0000'
 
-      - name: Wait for MySQL to be ready (real query)
-        run: |
-          for i in {1..20}; do
-            if mysql -h 127.0.0.1 -P 3306 -u root -p0000 -e 'SELECT 1'; then
-              echo "MySQL is ready!"
-              break
-            fi
-            echo "Waiting for MySQL to be ready..."
-            sleep 5
-          done
 
       - name: Create application.properties
         run: |
