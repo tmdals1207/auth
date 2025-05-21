@@ -22,7 +22,7 @@ jobs:
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=10
 
     steps:
       - name: Checkout repository
@@ -34,39 +34,44 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Create application-secret.properties
+      - name: Install MySQL Client
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
+
+      - name: Wait for MySQL to be ready (real query)
         run: |
-          cat <<EOT > ./src/main/resources/application-secret.properties
-          jwt.secret=${{ secrets.JWT_SECRET }}
-          EOT
+          for i in {1..10}; do
+            if mysql -h 127.0.0.1 -P 3306 -u root -p0000 -e 'SELECT 1'; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
 
       - name: Create application.properties
         run: |
+          mkdir -p ./src/main/resources
+
           cat <<EOT > ./src/main/resources/application.properties
           spring.application.name=auth
-
           spring.config.import=classpath:application-secret.properties
-
+          
           spring.datasource.url=jdbc:mysql://localhost:3306/auth
           spring.datasource.username=root
           spring.datasource.password=0000
           spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
+          
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=true
           spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
           EOT
+          
+          cat <<EOT > ./src/main/resources/application-secret.properties
+          jwt.secret=${{ secrets.JWT_SECRET }}
+          EOT
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
 
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..10}; do
-            nc -z localhost 3306 && echo "MySQL is up!" && break
-            echo "Waiting for MySQL..."
-            sleep 3
-          done
-
-      - name: Build with Gradle Wrapper
+      - name: Build with Gradle
         run: ./gradlew build
