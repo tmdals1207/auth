@@ -124,7 +124,7 @@ jobs:
                     user-info-uri: https://kapi.kakao.com/v2/user/me
                     user-name-attribute: id
           EOT
-          
+
       - name: Create application-test.properties
         run: |
           mkdir -p ./src/test/resources
