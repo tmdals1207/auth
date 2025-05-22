@@ -72,8 +72,8 @@ jobs:
           
           cat <<EOT > ./src/main/resources/application-secret.properties
           jwt.secret="$JWT_SECRET"
-          jwt.access-token-expiration="$JWT_ACCESS_EXPIRATION"
-          jwt.refresh-token-expiration="$JWT_REFRESH_EXPIRATION"
+          jwt.access-token-expiration=$JWT_ACCESS_EXPIRATION
+          jwt.refresh-token-expiration=$JWT_REFRESH_EXPIRATION
     
           # Google OAuth
           spring.security.oauth2.client.registration.google.client-id="$GOOGLE_CLIENT_ID"
@@ -124,8 +124,8 @@ jobs:
           
           cat <<EOT > ./src/test/resources/application-secret.properties
           jwt.secret="$JWT_SECRET"
-          jwt.access-token-expiration="$JWT_ACCESS_EXPIRATION"
-          jwt.refresh-token-expiration="$JWT_REFRESH_EXPIRATION"
+          jwt.access-token-expiration=$JWT_ACCESS_EXPIRATION
+          jwt.refresh-token-expiration=$JWT_REFRESH_EXPIRATION
           
           # Google OAuth
           spring.security.oauth2.client.registration.google.client-id="$GOOGLE_CLIENT_ID"
