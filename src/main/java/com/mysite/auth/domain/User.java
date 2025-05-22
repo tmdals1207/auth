@@ -16,6 +16,7 @@ import static java.lang.Boolean.TRUE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "user")
 public class User {
 
     @Id
