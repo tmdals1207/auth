@@ -83,14 +83,14 @@ jobs:
                 client:
                   registration:
                     google:
-                      client-id: "${GOOGLE_CLIENT_ID}"
-                      client-secret: "${GOOGLE_CLIENT_SECRET}"
+                      client-id: "$GOOGLE_CLIENT_ID"
+                      client-secret: "$GOOGLE_CLIENT_SECRET"
                       scope:
                         - email
                         - profile
                     naver:
-                      client-id: "${NAVER_CLIENT_ID}"
-                      client-secret: "${NAVER_CLIENT_SECRET}"
+                      client-id: "$NAVER_CLIENT_ID"
+                      client-secret: "$NAVER_CLIENT_SECRET"
                       redirect-uri: http://localhost:8080/login/oauth2/code/naver
                       authorization-grant-type: authorization_code
                       client-name: Naver
@@ -98,8 +98,8 @@ jobs:
                         - name
                         - email
                     kakao:
-                      client-id: "${KAKAO_CLIENT_ID}"
-                      client-secret: "${KAKAO_CLIENT_SECRET}"
+                      client-id: "$KAKAO_CLIENT_ID"
+                      client-secret: "$KAKAO_CLIENT_SECRET"
                       redirect-uri: http://localhost:8080/login/oauth2/code/kakao
                       client-authentication-method: client_secret_post
                       authorization-grant-type: authorization_code
@@ -123,7 +123,6 @@ jobs:
                     token-uri: https://kauth.kakao.com/oauth/token
                     user-info-uri: https://kapi.kakao.com/v2/user/me
                     user-name-attribute: id
-
             EOT
           
           - name: Create application-test.properties
@@ -152,14 +151,14 @@ jobs:
                 client:
                   registration:
                     google:
-                      client-id: "${GOOGLE_CLIENT_ID}"
-                      client-secret: "${GOOGLE_CLIENT_SECRET}"
+                      client-id: "$GOOGLE_CLIENT_ID"
+                      client-secret: "$GOOGLE_CLIENT_SECRET"
                       scope:
                         - email
                         - profile
                     naver:
-                      client-id: "${NAVER_CLIENT_ID}"
-                      client-secret: "${NAVER_CLIENT_SECRET}"
+                      client-id: "$NAVER_CLIENT_ID"
+                      client-secret: "$NAVER_CLIENT_SECRET"
                       redirect-uri: http://localhost:8080/login/oauth2/code/naver
                       authorization-grant-type: authorization_code
                       client-name: Naver
@@ -167,8 +166,8 @@ jobs:
                         - name
                         - email
                     kakao:
-                      client-id: "${KAKAO_CLIENT_ID}"
-                      client-secret: "${KAKAO_CLIENT_SECRET}"
+                      client-id: "$KAKAO_CLIENT_ID"
+                      client-secret: "$KAKAO_CLIENT_SECRET"
                       redirect-uri: http://localhost:8080/login/oauth2/code/kakao
                       client-authentication-method: client_secret_post
                       authorization-grant-type: authorization_code
@@ -192,7 +191,6 @@ jobs:
                     token-uri: https://kauth.kakao.com/oauth/token
                     user-info-uri: https://kapi.kakao.com/v2/user/me
                     user-name-attribute: id
-
             EOT
 
       - name: Grant execute permission for gradlew
