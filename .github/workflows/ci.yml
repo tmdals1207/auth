@@ -63,6 +63,8 @@ jobs:
 
           cat <<EOT > ./src/main/resources/application-secret.properties
           jwt.secret=${{ secrets.JWT_SECRET }}
+          jwt.access-token-expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}
+          jwt.refresh-token-expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}
           EOT
 
       - name: Create application-test.properties
