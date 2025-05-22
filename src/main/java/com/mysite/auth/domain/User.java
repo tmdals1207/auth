@@ -16,7 +16,6 @@ import static java.lang.Boolean.TRUE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user")
 public class User {
 
     @Id
@@ -54,6 +53,4 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // 상태 플래그 (선택): 탈퇴, 비활성 등 처리 가능
-    private boolean isActive = TRUE;
 }

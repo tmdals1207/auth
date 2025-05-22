@@ -65,7 +65,6 @@ public class UserService {
                 .provider(OAuthProvider.LOCAL)
                 .providerId(null)
                 .role(UserRole.ROLE_USER)
-                .isActive(TRUE)
                 .build();
 
         userRepository.save(user);
