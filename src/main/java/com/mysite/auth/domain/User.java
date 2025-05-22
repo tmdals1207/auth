@@ -1,5 +1,6 @@
 package com.mysite.auth.domain;
 
+import com.mysite.auth.eNum.OAuthProvider;
 import com.mysite.auth.eNum.UserRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,8 +34,9 @@ public class User {
     private String profileImage;
 
     // OAuth 제공자: "google", "kakao", "naver", "local"
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String provider;
+    private OAuthProvider provider;
 
     // OAuth 제공자에서 받은 고유 ID (local은 null)
     private String providerId;
