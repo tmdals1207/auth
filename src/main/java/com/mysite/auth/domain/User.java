@@ -4,11 +4,11 @@ import com.mysite.auth.eNum.OAuthProvider;
 import com.mysite.auth.eNum.UserRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
+
+import static java.lang.Boolean.TRUE;
 
 @Entity
 @Getter
@@ -54,5 +54,5 @@ public class User {
     private LocalDateTime updatedAt;
 
     // 상태 플래그 (선택): 탈퇴, 비활성 등 처리 가능
-    private boolean isActive = true;
+    private boolean isActive = TRUE;
 }
