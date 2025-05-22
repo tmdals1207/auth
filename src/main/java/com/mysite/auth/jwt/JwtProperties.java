@@ -6,11 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConfigurationProperties(prefix = "jwt")
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
-    private String secretKey;
+    private String secret;
     private long accessTokenExpiration;   // ms 단위
     private long refreshTokenExpiration;
 }
