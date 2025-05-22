@@ -115,6 +115,7 @@ jobs:
           
           cat <<EOT > ./src/test/resources/application-test.properties
           spring.config.import=classpath:application-secret.properties
+          spring.jpa.properties.hibernate.globally_quoted_identifiers=true
           spring.datasource.url=jdbc:h2:mem:testdb
           spring.datasource.driver-class-name=org.h2.Driver
           spring.datasource.username=sa
