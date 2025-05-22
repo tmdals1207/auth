@@ -144,7 +144,7 @@ jobs:
           jwt.refresh-token-expiration="$JWT_REFRESH_EXPIRATION"
           EOT
           
-          cat <<EOT > ./src/main/resources/application-secret.yml
+          cat <<EOT > ./src/test/resources/application-secret.yml
           spring:
             security:
               oauth2:
