@@ -1,4 +1,4 @@
-package com.mysite.auth.eNum;
+package com.mysite.auth.domain.enums;
 
 public enum OAuthProvider {
     GOOGLE,

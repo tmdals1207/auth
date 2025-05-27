@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/application-secret.properties
+src/main/resources/application-secret.yml
+src/test/resources/application-secret.properties
+src/test/resources/application-secret.yml
 
 ### STS ###
 .apt_generated

@@ -1,6 +1,6 @@
 package com.mysite.auth.repository;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

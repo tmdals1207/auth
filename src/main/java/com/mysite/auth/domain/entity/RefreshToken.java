@@ -1,4 +1,4 @@
-package com.mysite.auth.jwt;
+package com.mysite.auth.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

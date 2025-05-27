@@ -1,13 +1,11 @@
-package com.mysite.auth.domain;
+package com.mysite.auth.domain.entity;
 
-import com.mysite.auth.eNum.OAuthProvider;
-import com.mysite.auth.eNum.UserRole;
+import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.domain.enums.UserRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,6 +51,4 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // 상태 플래그 (선택): 탈퇴, 비활성 등 처리 가능
-    private boolean isActive = true;
 }

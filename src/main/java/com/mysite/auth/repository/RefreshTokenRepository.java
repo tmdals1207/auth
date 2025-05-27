@@ -1,5 +1,6 @@
-package com.mysite.auth.jwt;
+package com.mysite.auth.repository;
 
+import com.mysite.auth.domain.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

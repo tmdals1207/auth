@@ -19,4 +19,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEmailExists(EmailAlreadyExistsException e) {
+        ApiResponse<Void> errorResponse = new ApiResponse<>(
+                HttpStatus.CONFLICT.value(),
+                e.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidPassword(InvalidPasswordException e) {
+        ApiResponse<Void> errorResponse = new ApiResponse<>(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArg(IllegalArgumentException e) {
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(400, e.getMessage(), null));
+    }
+
 }

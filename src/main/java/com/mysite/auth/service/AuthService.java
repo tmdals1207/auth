@@ -1,10 +1,10 @@
 package com.mysite.auth.service;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.dto.response.AuthResponse;
 import com.mysite.auth.jwt.JwtTokenProvider;
-import com.mysite.auth.jwt.RefreshToken;
-import com.mysite.auth.jwt.RefreshTokenRepository;
+import com.mysite.auth.domain.entity.RefreshToken;
+import com.mysite.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
