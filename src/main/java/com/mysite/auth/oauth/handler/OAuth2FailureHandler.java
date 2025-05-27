@@ -1,4 +1,4 @@
-package com.mysite.auth.oauth;
+package com.mysite.auth.oauth.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

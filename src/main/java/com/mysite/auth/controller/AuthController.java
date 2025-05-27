@@ -8,7 +8,7 @@ import com.mysite.auth.dto.response.SignupResponse;
 import com.mysite.auth.dto.response.TokenResponse;
 import com.mysite.auth.jwt.JwtTokenProvider;
 import com.mysite.auth.service.RefreshTokenService;
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

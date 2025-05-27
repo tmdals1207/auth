@@ -1,6 +1,6 @@
-package com.mysite.auth.oauth;
+package com.mysite.auth.oauth.handler;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.jwt.JwtTokenProvider;
 import com.mysite.auth.repository.UserRepository;
 import com.mysite.auth.service.RefreshTokenService;
@@ -41,6 +41,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60);
 

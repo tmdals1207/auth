@@ -2,9 +2,9 @@ package com.mysite.auth.config;
 
 import com.mysite.auth.jwt.JwtAuthenticationFilter;
 import com.mysite.auth.jwt.JwtTokenProvider;
-import com.mysite.auth.oauth.CustomOAuth2UserService;
-import com.mysite.auth.oauth.OAuth2FailureHandler;
-import com.mysite.auth.oauth.OAuth2SuccessHandler;
+import com.mysite.auth.oauth.service.CustomOAuth2UserService;
+import com.mysite.auth.oauth.handler.OAuth2FailureHandler;
+import com.mysite.auth.oauth.handler.OAuth2SuccessHandler;
 import com.mysite.auth.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

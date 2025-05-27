@@ -1,8 +1,10 @@
-package com.mysite.auth.oauth;
+package com.mysite.auth.oauth.service;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.domain.enums.UserRole;
+import com.mysite.auth.oauth.info.OAuth2UserInfo;
+import com.mysite.auth.oauth.info.OAuth2UserInfoFactory;
 import com.mysite.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

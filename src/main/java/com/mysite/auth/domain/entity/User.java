@@ -1,4 +1,4 @@
-package com.mysite.auth.domain;
+package com.mysite.auth.domain.entity;
 
 import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.domain.enums.UserRole;

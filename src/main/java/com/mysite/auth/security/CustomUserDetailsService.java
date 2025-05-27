@@ -1,6 +1,6 @@
 package com.mysite.auth.security;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,6 +1,6 @@
 package com.mysite.auth.jwt;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

@@ -1,4 +1,4 @@
-package com.mysite.auth.oauth;
+package com.mysite.auth.oauth.info;
 
 import java.util.Map;
 

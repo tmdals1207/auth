@@ -1,6 +1,6 @@
 package com.mysite.auth.service;
 
-import com.mysite.auth.domain.User;
+import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.dto.request.LoginRequest;
 import com.mysite.auth.dto.response.LoginResponse;
 import com.mysite.auth.domain.enums.OAuthProvider;
