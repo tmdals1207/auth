@@ -3,8 +3,8 @@ package com.mysite.auth.service;
 import com.mysite.auth.domain.User;
 import com.mysite.auth.dto.request.LoginRequest;
 import com.mysite.auth.dto.response.LoginResponse;
-import com.mysite.auth.eNum.OAuthProvider;
-import com.mysite.auth.eNum.UserRole;
+import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.domain.enums.UserRole;
 import com.mysite.auth.exception.EmailAlreadyExistsException;
 import com.mysite.auth.exception.InvalidPasswordException;
 import com.mysite.auth.exception.UserNotFoundException;
@@ -17,8 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import static java.lang.Boolean.TRUE;
 
 @Service
 @RequiredArgsConstructor

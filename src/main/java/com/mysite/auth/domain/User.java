@@ -1,14 +1,12 @@
 package com.mysite.auth.domain;
 
-import com.mysite.auth.eNum.OAuthProvider;
-import com.mysite.auth.eNum.UserRole;
+import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.domain.enums.UserRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-
-import static java.lang.Boolean.TRUE;
 
 @Entity
 @Getter
