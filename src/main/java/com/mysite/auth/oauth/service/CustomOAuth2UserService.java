@@ -30,7 +30,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        String provider = userRequest.getClientRegistration().getRegistrationId();
+
+        String providerStr = userRequest.getClientRegistration().getRegistrationId();
+        OAuthProvider provider = OAuthProvider.valueOf(providerStr.toUpperCase());
+
         log.info("OAuth2 로그인 시도: provider = {}", provider);
         log.info("attributes = {}", oAuth2User.getAttributes());
 
@@ -39,10 +42,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("email = {}", email);
 
         if (email == null) {
-            throw new OAuth2AuthenticationException(provider.toUpperCase() + " 계정에 이메일 정보가 없습니다. 이메일 제공 동의가 필요합니다.");
+            throw new OAuth2AuthenticationException(provider + " 계정에 이메일 정보가 없습니다. 이메일 제공 동의가 필요합니다.");
         }
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndProvider(email,provider)
                 .orElseGet(() -> registerUser(userInfo, provider));
 
         Map<String, Object> attributes = new HashMap<>(userInfo.getAttributes());
@@ -56,12 +59,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
 
-    private User registerUser(OAuth2UserInfo userInfo, String provider) {
+    private User registerUser(OAuth2UserInfo userInfo, OAuthProvider provider) {
         User user = User.builder()
                 .email(userInfo.getEmail())
                 .nickname(userInfo.getNickname())
                 .profileImage(userInfo.getProfileImage())
-                .provider(OAuthProvider.valueOf(provider.toUpperCase()))
+                .provider(provider)
                 .providerId(userInfo.getProviderId())
                 .role(UserRole.ROLE_USER)
                 .build();

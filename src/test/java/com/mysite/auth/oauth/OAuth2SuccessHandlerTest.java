@@ -1,6 +1,7 @@
 package com.mysite.auth.oauth;
 
 import com.mysite.auth.domain.entity.User;
+import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.jwt.JwtTokenProvider;
 import com.mysite.auth.oauth.handler.OAuth2SuccessHandler;
 import com.mysite.auth.repository.UserRepository;
@@ -56,9 +57,12 @@ class OAuth2SuccessHandlerTest {
         );
 
         when(authentication.getPrincipal()).thenReturn(userPrincipal);
-        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmailAndProvider("user@example.com", OAuthProvider.GOOGLE))
+                .thenReturn(Optional.of(new User()));
         when(jwtTokenProvider.generateAccessToken(any())).thenReturn("mockAccessToken");
         when(jwtTokenProvider.generateRefreshToken(any())).thenReturn("mockRefreshToken");
+
+        when(request.getRequestURI()).thenReturn("/login/oauth2/code/google");
 
         Cookie[] resultCookies = new Cookie[1];
         doAnswer(invocation -> {
