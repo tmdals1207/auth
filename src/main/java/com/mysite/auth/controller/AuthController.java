@@ -14,10 +14,12 @@ import com.mysite.auth.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -30,7 +32,9 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<TokenResponse>> reissueAccessToken(HttpServletRequest request) {
         // 1. 요청에서 refresh token 추출
-        String refreshToken = jwtTokenProvider.resolveToken(request);
+        String refreshToken = request.getHeader("Refresh-Token");
+        log.info("요청 {}", request.getRequestURI());
+        log.info("리프레시 토큰 : {}", refreshToken);
 
         // 2. 유효성 검사
         if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {

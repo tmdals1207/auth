@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email", "provider"}))
 public class User {
 
     @Id
@@ -21,7 +23,7 @@ public class User {
     private Long id;
 
     // 이메일: 로그인 ID 역할
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     private String password;
