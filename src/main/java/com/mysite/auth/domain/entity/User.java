@@ -1,12 +1,11 @@
-package com.mysite.auth.domain.user;
+package com.mysite.auth.domain.entity;
 
-import com.mysite.auth.eNum.UserRole;
+import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.domain.enums.UserRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email", "provider"}))
 public class User {
 
     @Id
@@ -22,7 +23,7 @@ public class User {
     private Long id;
 
     // 이메일: 로그인 ID 역할
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     private String password;
@@ -33,8 +34,9 @@ public class User {
     private String profileImage;
 
     // OAuth 제공자: "google", "kakao", "naver", "local"
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String provider;
+    private OAuthProvider provider;
 
     // OAuth 제공자에서 받은 고유 ID (local은 null)
     private String providerId;
@@ -51,6 +53,4 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // 상태 플래그 (선택): 탈퇴, 비활성 등 처리 가능
-    private boolean isActive = true;
 }

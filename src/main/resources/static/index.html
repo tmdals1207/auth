@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth2 + 일반 로그인 데모</title>
+    <style>
+        body { font-family: Arial; background: #f5f6fa; margin: 0; padding: 40px; }
+        .container { max-width: 400px; margin: 40px auto; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 32px; }
+        h2 { text-align: center; margin-bottom: 32px; }
+        .oauth-btn { width: 100%; margin: 8px 0; padding: 12px; border: none; border-radius: 6px; font-size: 16px; color: white; cursor: pointer; }
+        .btn-google { background: #4285F4; }
+        .btn-naver { background: #03C75A; }
+        .btn-kakao { background: #fee500; color: #381e1f; }
+        .btn-kakao img { height: 20px; vertical-align: middle; margin-right: 8px; }
+        .section { margin-bottom: 32px; }
+        .divider { border-top: 1px solid #eee; margin: 20px 0 12px 0;}
+        .or { text-align: center; margin: 18px 0 10px 0; color: #888; }
+        form { margin-top: 8px; }
+        input { width: 100%; padding: 10px; margin-bottom: 14px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; }
+        button[type="submit"], #logout-btn { width: 100%; padding: 12px; background: #273c75; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;}
+        #logout-btn { background: #e84118; margin-top: 18px; }
+        .msg { color: #e84118; text-align: center; margin-bottom: 12px; min-height: 24px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>로그인 / 회원가입</h2>
+    <!-- OAuth2 버튼 -->
+    <div class="section">
+        <button class="oauth-btn btn-google" onclick="location.href='/oauth2/authorization/google'">Google 로그인</button>
+        <button class="oauth-btn btn-naver" onclick="location.href='/oauth2/authorization/naver'">Naver 로그인</button>
+        <button class="oauth-btn btn-kakao" onclick="location.href='/oauth2/authorization/kakao'">
+            <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png" alt="카카오"/>Kakao 로그인
+        </button>
+    </div>
+    <div class="divider"></div>
+    <!-- 일반 로그인 -->
+    <div class="section">
+        <div class="or">일반 로그인</div>
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="이메일" required />
+            <input type="password" id="login-password" placeholder="비밀번호" required />
+            <button type="submit">로그인</button>
+        </form>
+    </div>
+    <!-- 회원가입 -->
+    <div class="section">
+        <div class="or">회원가입</div>
+        <form id="signup-form">
+            <input type="email" id="signup-email" placeholder="이메일" required />
+            <input type="password" id="signup-password" placeholder="비밀번호" required />
+            <input type="text" id="signup-nickname" placeholder="닉네임" required />
+            <button type="submit">회원가입</button>
+        </form>
+    </div>
+    <!-- 로그아웃 버튼 -->
+    <button id="logout-btn">로그아웃</button>
+    <div id="message" class="msg"></div>
+</div>
+<script>
+    // 일반 로그인
+    document.getElementById("login-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+        const res = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        document.getElementById("message").innerText = data.message || (res.ok ? "로그인 성공" : "로그인 실패");
+        if(res.ok) setTimeout(()=> location.reload(), 1000);
+    });
+
+    // 회원가입
+    document.getElementById("signup-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+        const nickname = document.getElementById("signup-nickname").value;
+        const res = await fetch('/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, nickname })
+        });
+        const data = await res.json();
+        document.getElementById("message").innerText = data.message || (res.ok ? "회원가입 성공" : "회원가입 실패");
+        if(res.ok) setTimeout(()=> location.reload(), 1000);
+    });
+
+    // 로그아웃: accessToken 쿠키 삭제(서버에도 /auth/logout 엔드포인트 구현 시 활용)
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+        await fetch('/auth/logout', { method: 'POST', credentials: 'include' });
+        document.cookie = "accessToken=; Max-Age=0; path=/;";
+        document.getElementById("message").innerText = "로그아웃 되었습니다.";
+        setTimeout(()=> location.reload(), 800);
+    });
+</script>
+</body>
+</html>
