@@ -1,17 +1,16 @@
 package com.mysite.auth.service;
 
 import com.mysite.auth.domain.entity.User;
-import com.mysite.auth.dto.request.LoginRequest;
-import com.mysite.auth.dto.response.LoginResponse;
 import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.domain.enums.UserRole;
-import com.mysite.auth.exception.EmailAlreadyExistsException;
-import com.mysite.auth.exception.InvalidPasswordException;
-import com.mysite.auth.exception.UserNotFoundException;
+import com.mysite.auth.dto.request.LoginRequest;
+import com.mysite.auth.dto.request.SignupRequest;
+import com.mysite.auth.dto.response.LoginResponse;
+import com.mysite.auth.dto.response.SignupResponse;
+import com.mysite.auth.exception.AuthException;
+import com.mysite.auth.exception.GeneralException;
 import com.mysite.auth.jwt.JwtTokenProvider;
 import com.mysite.auth.repository.UserRepository;
-import com.mysite.auth.dto.request.SignupRequest;
-import com.mysite.auth.dto.response.SignupResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +28,17 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+                .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException();
+            throw new GeneralException(AuthException.INVALID_PASSWORD);
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+        OAuthProvider provider = user.getProvider();
 
-        refreshTokenService.save(user.getEmail(), refreshToken);
+        refreshTokenService.save(user.getEmail(), provider, refreshToken);
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
@@ -53,7 +53,7 @@ public class UserService {
 
     public SignupResponse registerUser(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new EmailAlreadyExistsException(request.getEmail());
+            throw new GeneralException(AuthException.EMAIL_ALREADY_EXISTS);
         }
 
         User user = User.builder()
@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public User findUserByEmail(String email) {
-        return userRepository.  findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
     }
 }

@@ -28,8 +28,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+            HttpServletResponse response,
+            Authentication authentication) throws IOException {
 
         DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
@@ -47,13 +47,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         log.info("email: {}, provider: {}", email, provider);
 
-        User user = userRepository.findByEmailAndProvider(email,provider)
+        User user = userRepository.findByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new IllegalArgumentException("OAuth 로그인 유저 DB에 없음"));
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
-        refreshTokenService.save(email, refreshToken);
+        refreshTokenService.save(email, provider, refreshToken);
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);

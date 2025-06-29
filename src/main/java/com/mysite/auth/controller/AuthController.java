@@ -1,5 +1,7 @@
 package com.mysite.auth.controller;
 
+import com.mysite.auth.domain.entity.User;
+import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.dto.request.LoginRequest;
 import com.mysite.auth.dto.request.SignupRequest;
 import com.mysite.auth.dto.response.ApiResponse;
@@ -7,17 +9,19 @@ import com.mysite.auth.dto.response.LoginResponse;
 import com.mysite.auth.dto.response.SignupResponse;
 import com.mysite.auth.dto.response.TokenResponse;
 import com.mysite.auth.jwt.JwtTokenProvider;
+import com.mysite.auth.service.AuthService;
 import com.mysite.auth.service.RefreshTokenService;
-import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -28,14 +32,16 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/reissue")
-    public ResponseEntity<ApiResponse<TokenResponse>> reissueAccessToken(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<TokenResponse>> reissueAccessToken(
+            HttpServletRequest request) {
         // 1. 요청에서 refresh token 추출
         String refreshToken = request.getHeader("Refresh-Token");
         log.info("요청 {}", request.getRequestURI());
         log.info("리프레시 토큰 : {}", refreshToken);
-
+        TokenResponse tokenResponse = authService.reissueAccessToken(refreshToken);
         // 2. 유효성 검사
         if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
             return ResponseEntity.status(401)
@@ -44,9 +50,10 @@ public class AuthController {
 
         // 3. 토큰에서 사용자 email 추출
         String email = jwtTokenProvider.getUserEmailFromToken(refreshToken);
+        OAuthProvider provider = jwtTokenProvider.getProviderFromToken(refreshToken);
 
         // 4. DB에 저장된 refresh token과 비교
-        var savedToken = refreshTokenService.findByEmail(email)
+        var savedToken = refreshTokenService.findByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new IllegalArgumentException("저장된 리프레시 토큰 없음"));
 
         if (!savedToken.getToken().equals(refreshToken)) {
@@ -56,9 +63,6 @@ public class AuthController {
 
         // 5. 사용자 정보로 새 Access Token 발급
         User user = userService.findUserByEmail(email);
-
-        String newAccessToken = jwtTokenProvider.generateAccessToken(user);
-        TokenResponse tokenResponse = new TokenResponse(newAccessToken);
 
         // 6. 클라이언트에 새 토큰 반환
         return ResponseEntity.ok(new ApiResponse<>(200, "토큰 재발급 성공", tokenResponse));

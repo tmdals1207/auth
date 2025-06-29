@@ -1,15 +1,15 @@
 package com.mysite.auth.security;
 
 import com.mysite.auth.domain.entity.User;
+import com.mysite.auth.domain.enums.OAuthProvider;
 import com.mysite.auth.repository.UserRepository;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())))
+                .authorities(Collections.singletonList(
+                        new SimpleGrantedAuthority(user.getRole().name())))
                 .build();
+    }
+
+    public UserDetails loadUserByEmailAndProvider(String email, OAuthProvider provider) {
+        User user = userRepository.findByEmailAndProvider(email, provider)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "사용자를 찾을 수 없습니다: email = " + email + ", provider = " + provider));
+
+        return CustomUserDetails.from(user);
     }
 }
