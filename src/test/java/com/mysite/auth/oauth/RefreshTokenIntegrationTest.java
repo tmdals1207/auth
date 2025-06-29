@@ -1,5 +1,11 @@
 package com.mysite.auth.oauth;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.dto.request.LoginRequest;
@@ -15,10 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,7 +76,7 @@ public class RefreshTokenIntegrationTest {
         // 3. 리프레시 토큰 발급/저장 (직접 서비스 계층 사용)
         User user = userRepository.findByEmail("refreshuser@example.com").orElseThrow();
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
-        refreshTokenService.save(user.getEmail(), refreshToken);
+        refreshTokenService.save(user.getEmail(), user.getProvider(), refreshToken);
 
         // 4. 만료된 액세스 토큰(혹은 그냥 임의 값) + 저장된 리프레시 토큰으로 재발급 요청
         mockMvc.perform(post("/auth/reissue")

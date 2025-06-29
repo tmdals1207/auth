@@ -1,7 +1,14 @@
 package com.mysite.auth.oauth;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.mysite.auth.domain.entity.User;
 import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.domain.enums.UserRole;
 import com.mysite.auth.jwt.JwtTokenProvider;
 import com.mysite.auth.oauth.handler.OAuth2SuccessHandler;
 import com.mysite.auth.repository.UserRepository;
@@ -9,6 +16,9 @@ import com.mysite.auth.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,14 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OAuth2SuccessHandlerTest {
@@ -56,9 +58,18 @@ class OAuth2SuccessHandlerTest {
                 "email"
         );
 
+        User user = User.ofOAuthUser(
+                "user@example.com",
+                "테스트유저",
+                "https://example.com/profile.jpg", // 임의 URL
+                "oauth-provider-id-123",
+                OAuthProvider.GOOGLE,
+                UserRole.ROLE_USER
+        );
+
         when(authentication.getPrincipal()).thenReturn(userPrincipal);
         when(userRepository.findByEmailAndProvider("user@example.com", OAuthProvider.GOOGLE))
-                .thenReturn(Optional.of(new User()));
+                .thenReturn(Optional.of(user));
         when(jwtTokenProvider.generateAccessToken(any())).thenReturn("mockAccessToken");
         when(jwtTokenProvider.generateRefreshToken(any())).thenReturn("mockRefreshToken");
 
