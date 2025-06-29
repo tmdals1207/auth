@@ -46,7 +46,7 @@ spring:
 
   config:
     import:
-      - classpath:application-secret.properties
+      - classpath:application-dev.properties
 
   datasource:
     url: jdbc:mysql://localhost:3306/auth
@@ -58,3 +58,17 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+
+---
+spring:
+  config:
+    import: classpath:application-dev.properties
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    import: classpath:application-prod.properties
+    activate:
+      on-profile: prod
