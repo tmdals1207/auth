@@ -1,5 +1,6 @@
 package com.mysite.auth.jwt;
 
+import com.mysite.auth.domain.enums.OAuthProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,17 +23,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         String token = jwtTokenProvider.resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 사용자 정보 가져오기
             String email = jwtTokenProvider.getUserEmailFromToken(token);
+            OAuthProvider provider = jwtTokenProvider.getProviderFromToken(token);
 
             // UserDetailsService를 통해 사용자 인증 객체 생성
-            var userDetails = jwtTokenProvider.getAuthentication(email);
+            var userDetails = jwtTokenProvider.getAuthentication(email, provider);
 
             // SecurityContext에 인증 정보 등록
             var auth = new UsernamePasswordAuthenticationToken(

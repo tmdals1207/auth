@@ -1,20 +1,27 @@
 package com.mysite.auth.jwt;
 
 import com.mysite.auth.domain.entity.User;
-import io.jsonwebtoken.*;
+import com.mysite.auth.domain.enums.OAuthProvider;
+import com.mysite.auth.security.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Date;
 
 @Slf4j
 @Component
@@ -22,7 +29,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private Key secretKey;
 
     @PostConstruct
@@ -35,17 +42,23 @@ public class JwtTokenProvider {
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole().name())
                 .claim("id", user.getId())
+                .claim("provider", user.getProvider())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpiration()))
+                .setExpiration(new Date(
+                        System.currentTimeMillis() + jwtProperties.getAccessTokenExpiration()))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String generateRefreshToken(User user) {
+        log.info("refreshToken 발급용 provider: {}", user.getProvider());
+
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("provider", user.getProvider().name())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpiration()))
+                .setExpiration(new Date(
+                        System.currentTimeMillis() + jwtProperties.getRefreshTokenExpiration()))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -74,7 +87,8 @@ public class JwtTokenProvider {
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
+                .getBody();
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -85,17 +99,24 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public Authentication getAuthentication(String email) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    public Authentication getAuthentication(String email, OAuthProvider provider) {
+        UserDetails userDetails = userDetailsService.loadUserByEmailAndProvider(email, provider);
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+                userDetails.getAuthorities());
     }
+
 
     public String getUserEmailFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)  // 보통 Base64 인코딩된 secret key
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject();  // 이메일 또는 username을 subject에 넣었다면
+                .getSubject();
+    }
+
+    public OAuthProvider getProviderFromToken(String token) {
+        String raw = getClaims(token).get("provider", String.class);
+        return OAuthProvider.valueOf(raw);
     }
 
 }
