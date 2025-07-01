@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # 실행환경 지정
+    runs-on: ubuntu-latest
 
     services:
       mysql:
@@ -27,12 +27,11 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=0000"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=10
 
-    # 실행 스텝 지정
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
@@ -43,13 +42,36 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            mysql -h 127.0.0.1 -P 3306 -u root -p0000 -e "SELECT 1" && echo "MySQL is ready!" && exit 0
+            echo "Waiting for MySQL... ($i)"
+            sleep 2
+          done
+          echo "MySQL did not start in time." && exit 1
+
       - name: application-dev.properties 파일 주입
         run: |
-          touch src/main/resources/application-dev.properties
+          mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_DEV_PROPERTIES }}" > src/main/resources/application-dev.properties
+
+      - name: application-test.properties 생성
+        run: |
+          mkdir -p src/test/resources
+          cat <<EOT > src/test/resources/application-test.properties
+          spring.datasource.url=jdbc:mysql://127.0.0.1:3306/authtestdb
+          spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+          spring.datasource.username=root
+          spring.datasource.password=0000
+          spring.jpa.hibernate.ddl-auto=create-drop
+          spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+          spring.jpa.show-sql=true
+          EOT
 
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
 
-      - name: Gradle 빌드 실행
-        run: ./gradlew clean build --stacktrace
+      - name: Gradle 빌드 + 테스트
+        run: ./gradlew clean build -Dspring.profiles.active=test --stacktrace
