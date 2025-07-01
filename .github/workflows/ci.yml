@@ -46,7 +46,7 @@ jobs:
         run: |
           echo "Waiting for MySQL to be ready..."
           for i in {1..30}; do
-            mysql -h 127.0.0.1 -P 3306 -u root -p0000 -e "SELECT 1" && echo "MySQL is ready!" && exit 0
+            mysql -h 127.0.0.1 -P 3306 -u root -e "SELECT 1" && echo "MySQL is ready!" && exit 0
             echo "Waiting for MySQL... ($i)"
             sleep 2
           done
