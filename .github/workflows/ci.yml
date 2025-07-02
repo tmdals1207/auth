@@ -18,7 +18,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: authtestdb
+          MYSQL_ROOT_PASSWORD: 0000
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -uroot -p0000"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker exec $(docker ps -q -f ancestor=mysql:8) mysqladmin ping -h127.0.0.1 -uroot -p0000 --silent; then
+              echo "MySQL is up!"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
