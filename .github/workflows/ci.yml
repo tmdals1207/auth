@@ -44,8 +44,8 @@ jobs:
             sleep 10
           done
 
-      - name: Print MySQL env in container
-        run: docker exec $(docker ps -q -f ancestor=mysql:8.0.36) printenv | grep MYSQL
+      - name: List running containers
+        run: docker ps -a
 
       - name: 코드 체크아웃
         uses: actions/checkout@v4
