@@ -33,6 +33,11 @@ jobs:
           --health-retries=5
 
     steps:
+      - name: Set MySQL root password
+        run: |
+          docker exec $(docker ps -q -f ancestor=mysql:8) \
+          mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '0000'; FLUSH PRIVILEGES;"
+
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
