@@ -44,6 +44,9 @@ jobs:
             sleep 10
           done
 
+      - name: MySQL container logs
+        run: docker logs $(docker ps -q -f ancestor=mysql:8)
+
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
@@ -57,6 +60,9 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_DEV_PROPERTIES }}" > src/main/resources/application-dev.properties
+
+      - name: Check injected application-dev.properties
+        run: cat src/main/resources/application-dev.properties
 
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
