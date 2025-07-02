@@ -44,11 +44,6 @@ jobs:
             sleep 10
           done
 
-      - name: Set MySQL root password (강제 재설정 필요시)
-        run: |
-          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
-          mysql -uroot -p0000 -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '0000'; FLUSH PRIVILEGES;"
-
       - name: Test MySQL connection
         run: |
           docker exec $(docker ps -q -f ancestor=mysql:8.0) \
