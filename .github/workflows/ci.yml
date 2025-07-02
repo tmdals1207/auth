@@ -33,23 +33,10 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Set MySQL root password
-        run: |
-          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
-          mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '0000'; FLUSH PRIVILEGES;"
-
-      - name: Debug MySQL env
-        run: echo "MYSQL_ROOT_PASSWORD=${{ job.services.mysql.env.MYSQL_ROOT_PASSWORD }}"
-
-      - name: Test MySQL connection
-        run: |
-          docker exec $(docker ps -q -f ancestor=mysql:8) \
-          mysql -u root -e "SELECT 1;"
-
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            if docker exec $(docker ps -q -f ancestor=mysql:8) mysqladmin ping -h127.0.0.1 -uroot -p0000 --silent; then
+            if docker exec $(docker ps -q -f ancestor=mysql:8.0) mysqladmin ping -h127.0.0.1 -uroot -p0000 --silent; then
               echo "MySQL is up!"
               break
             fi
@@ -57,8 +44,21 @@ jobs:
             sleep 10
           done
 
+      - name: Set MySQL root password (강제 재설정 필요시)
+        run: |
+          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
+          mysql -uroot -p0000 -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '0000'; FLUSH PRIVILEGES;"
+
+      - name: Test MySQL connection
+        run: |
+          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
+          mysql -uroot -p0000 -e "SELECT 1;"
+
+      - name: Debug MySQL env
+        run: echo "MYSQL_ROOT_PASSWORD=${{ job.services.mysql.env.MYSQL_ROOT_PASSWORD }}"
+
       - name: MySQL container logs
-        run: docker logs $(docker ps -q -f ancestor=mysql:8)
+        run: docker logs $(docker ps -q -f ancestor=mysql:8.0)
 
       - name: 코드 체크아웃
         uses: actions/checkout@v4
