@@ -22,8 +22,8 @@ jobs:
       mysql:
         image: mysql:8.0.36
         env:
-          MYSQL_DATABASE: 'authtestdb'
-          MYSQL_ROOT_PASSWORD: '0000'
+          MYSQL_DATABASE: authtestdb
+          MYSQL_ROOT_PASSWORD: 0000
         ports:
           - 3306:3306
         options: >-
