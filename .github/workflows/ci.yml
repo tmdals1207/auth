@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Set MySQL root password
         run: |
-          docker exec $(docker ps -q -f ancestor=mysql:8) \
+          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
           mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '0000'; FLUSH PRIVILEGES;"
 
       - name: Debug MySQL env
