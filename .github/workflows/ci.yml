@@ -23,7 +23,7 @@ jobs:
         image: mysql:8.0.36
         env:
           MYSQL_DATABASE: authtestdb
-          MYSQL_ROOT_PASSWORD: 0000
+          MYSQL_ROOT_PASSWORD: '0000'
         ports:
           - 3306:3306
         options: >-
@@ -68,4 +68,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Gradle 빌드 + 테스트
-        run: ./gradlew clean build -Dspring.profiles.active=test --stacktrace
+        run: ./gradlew clean build --stacktrace
