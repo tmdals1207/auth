@@ -41,7 +41,7 @@ jobs:
               break
             fi
             echo "Waiting for MySQL..."
-            sleep 2
+            sleep 10
           done
 
       - name: 코드 체크아웃
