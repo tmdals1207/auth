@@ -44,17 +44,6 @@ jobs:
             sleep 10
           done
 
-      - name: Test MySQL connection
-        run: |
-          docker exec $(docker ps -q -f ancestor=mysql:8.0) \
-          mysql -uroot -p0000 -e "SELECT 1;"
-
-      - name: Debug MySQL env
-        run: echo "MYSQL_ROOT_PASSWORD=${{ job.services.mysql.env.MYSQL_ROOT_PASSWORD }}"
-
-      - name: MySQL container logs
-        run: docker logs $(docker ps -q -f ancestor=mysql:8.0)
-
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
