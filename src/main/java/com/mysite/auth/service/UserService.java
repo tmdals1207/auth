@@ -38,7 +38,7 @@ public class UserService {
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
         OAuthProvider provider = user.getProvider();
 
-        refreshTokenService.save(user.getEmail(), provider, refreshToken);
+        refreshTokenService.save(user, refreshToken);
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
@@ -72,6 +72,12 @@ public class UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
+    }
+
+    public User findUserByEmailAndProvider(String email, OAuthProvider provider) {
+
+        return userRepository.findByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
     }
 }

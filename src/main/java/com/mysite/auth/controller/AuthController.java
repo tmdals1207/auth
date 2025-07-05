@@ -51,9 +51,10 @@ public class AuthController {
         // 3. 토큰에서 사용자 email 추출
         String email = jwtTokenProvider.getUserEmailFromToken(refreshToken);
         OAuthProvider provider = jwtTokenProvider.getProviderFromToken(refreshToken);
+        User user = userService.findUserByEmailAndProvider(email, provider);
 
         // 4. DB에 저장된 refresh token과 비교
-        var savedToken = refreshTokenService.findByEmailAndProvider(email, provider)
+        var savedToken = refreshTokenService.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("저장된 리프레시 토큰 없음"));
 
         if (!savedToken.getToken().equals(refreshToken)) {
@@ -62,7 +63,6 @@ public class AuthController {
         }
 
         // 5. 사용자 정보로 새 Access Token 발급
-        User user = userService.findUserByEmail(email);
 
         // 6. 클라이언트에 새 토큰 반환
         return ResponseEntity.ok(new ApiResponse<>(200, "토큰 재발급 성공", tokenResponse));
@@ -96,9 +96,12 @@ public class AuthController {
         }
 
         String email = jwtTokenProvider.getUserEmailFromToken(token);
+        OAuthProvider provider = jwtTokenProvider.getProviderFromToken(token);
+
+        User user = userService.findUserByEmailAndProvider(email, provider);
 
         // DB에서 리프레시 토큰 삭제
-        refreshTokenService.deleteByEmail(email);
+        refreshTokenService.deleteByUser(user);
 
         ApiResponse<Void> successResponse = new ApiResponse<>(200, "로그아웃 완료", null);
         return ResponseEntity.ok(successResponse);
