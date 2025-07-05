@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class JwtProperties {
+
     private String secret;
     private long accessTokenExpiration;   // ms 단위
     private long refreshTokenExpiration;

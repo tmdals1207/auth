@@ -14,6 +14,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public void save(User user, String refreshToken) {
+
         refreshTokenRepository.findByUser(user).ifPresentOrElse(
                 token -> refreshTokenRepository.save(token.toBuilder().token(refreshToken).build()),
                 () -> refreshTokenRepository.save(
@@ -31,6 +32,7 @@ public class RefreshTokenService {
     }
 
     public Optional<RefreshToken> findByUser(User user) {
+
         return refreshTokenRepository.findByUser(user);
     }
 }

@@ -44,6 +44,7 @@ public class AuthController {
         TokenResponse tokenResponse = authService.reissueAccessToken(refreshToken);
         // 2. 유효성 검사
         if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+
             return ResponseEntity.status(401)
                     .body(new ApiResponse<>(401, "유효하지 않은 리프레시 토큰입니다.", null));
         }
@@ -58,6 +59,7 @@ public class AuthController {
                 .orElseThrow(() -> new IllegalArgumentException("저장된 리프레시 토큰 없음"));
 
         if (!savedToken.getToken().equals(refreshToken)) {
+
             return ResponseEntity.status(403)
                     .body(new ApiResponse<>(403, "리프레시 토큰 불일치", null));
         }
@@ -70,8 +72,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody SignupRequest request) {
+
         SignupResponse result = userService.registerUser(request);
         ApiResponse<SignupResponse> apiResponse = new ApiResponse<>(200, "회원가입 성공", result);
+
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -80,18 +84,22 @@ public class AuthController {
             @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
+
         LoginResponse result = userService.login(request, response);
         ApiResponse<LoginResponse> apiResponse = new ApiResponse<>(200, "로그인 성공", result);
+
         return ResponseEntity.ok(apiResponse);
     }
 
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
+
         String token = jwtTokenProvider.resolveToken(request);
 
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             ApiResponse<Void> errorResponse = new ApiResponse<>(401, "유효하지 않은 토큰입니다.", null);
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
@@ -104,6 +112,7 @@ public class AuthController {
         refreshTokenService.deleteByUser(user);
 
         ApiResponse<Void> successResponse = new ApiResponse<>(200, "로그아웃 완료", null);
+
         return ResponseEntity.ok(successResponse);
     }
 

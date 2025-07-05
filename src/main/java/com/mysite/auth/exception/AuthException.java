@@ -20,6 +20,7 @@ public enum AuthException implements BaseException {
 
     @Override
     public String getExceptionName() {
+
         return this.name();
     }
 

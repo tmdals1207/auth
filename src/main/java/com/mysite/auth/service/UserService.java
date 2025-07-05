@@ -27,6 +27,7 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
 
@@ -52,6 +53,7 @@ public class UserService {
     }
 
     public SignupResponse registerUser(SignupRequest request) {
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new GeneralException(AuthException.EMAIL_ALREADY_EXISTS);
         }
@@ -68,11 +70,6 @@ public class UserService {
         userRepository.save(user);
 
         return new SignupResponse(user.getId(), "회원가입이 완료되었습니다.");
-    }
-
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new GeneralException(AuthException.USER_NOT_FOUND));
     }
 
     public User findUserByEmailAndProvider(String email, OAuthProvider provider) {

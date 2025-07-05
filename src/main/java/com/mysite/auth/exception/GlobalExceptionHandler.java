@@ -1,7 +1,7 @@
 package com.mysite.auth.exception;
 
-import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +13,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(GeneralException.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException(GeneralException e) {
+
         log.error("[{}] {}", e.getExceptionName(), e.getMessage());
+
         return ResponseEntity
                 .status(e.getHttpStatus())
                 .body(new ExceptionResponse(e.getExceptionName(), e.getMessage()));

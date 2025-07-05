@@ -38,6 +38,7 @@ public class JwtTokenProvider {
     }
 
     public String generateAccessToken(User user) {
+
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole().name())
@@ -51,6 +52,7 @@ public class JwtTokenProvider {
     }
 
     public String generateRefreshToken(User user) {
+
         log.info("refreshToken 발급용 provider: {}", user.getProvider());
 
         return Jwts.builder()
@@ -64,11 +66,13 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
+
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
+
             return true;
         } catch (ExpiredJwtException e) {
             log.error("만료된 JWT 토큰입니다: {}", e.getMessage());
@@ -83,30 +87,38 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             log.error("JWT 관련 예외 발생: {}", e.getMessage());
         }
+
         return false;
     }
 
     public Claims getClaims(String token) {
+
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
                 .getBody();
     }
 
     public String resolveToken(HttpServletRequest request) {
+
         String bearer = request.getHeader("Authorization");
         if (bearer != null && bearer.startsWith("Bearer ")) {
+
             return bearer.substring(7);
         }
+
         return null;
     }
 
     public Authentication getAuthentication(String email, OAuthProvider provider) {
+
         UserDetails userDetails = userDetailsService.loadUserByEmailAndProvider(email, provider);
+
         return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());
     }
 
 
     public String getUserEmailFromToken(String token) {
+
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -115,7 +127,9 @@ public class JwtTokenProvider {
     }
 
     public OAuthProvider getProviderFromToken(String token) {
+
         String raw = getClaims(token).get("provider", String.class);
+
         return OAuthProvider.valueOf(raw);
     }
 
