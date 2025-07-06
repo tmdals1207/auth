@@ -1,48 +1,49 @@
 package com.mysite.auth.exception;
 
-import com.mysite.auth.dto.response.ApiResponse;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException e) {
-        ApiResponse<Void> errorResponse = new ApiResponse<>(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    @ExceptionHandler(GeneralException.class)
+    public ResponseEntity<ExceptionResponse> handleGeneralException(GeneralException e) {
+
+        log.error("[{}] {}", e.getExceptionName(), e.getMessage());
+
+        return ResponseEntity
+                .status(e.getHttpStatus())
+                .body(new ExceptionResponse(e.getExceptionName(), e.getMessage()));
     }
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleEmailExists(EmailAlreadyExistsException e) {
-        ApiResponse<Void> errorResponse = new ApiResponse<>(
-                HttpStatus.CONFLICT.value(),
-                e.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
-    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleControllerValidationException(
+            MethodArgumentNotValidException e) {
 
-    @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidPassword(InvalidPasswordException e) {
-        ApiResponse<Void> errorResponse = new ApiResponse<>(
-                HttpStatus.UNAUTHORIZED.value(),
-                e.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-    }
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .orElse("잘못된 요청입니다.");
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArg(IllegalArgumentException e) {
         return ResponseEntity.badRequest()
-                .body(new ApiResponse<>(400, e.getMessage(), null));
+                .body(new ExceptionResponse("VALIDATION_ERROR", errorMessage));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ExceptionResponse> handleServiceValidationException(
+            ConstraintViolationException e) {
+
+        String errorMessage = e.getConstraintViolations().stream()
+                .findFirst()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .orElse("잘못된 요청입니다.");
+
+        return ResponseEntity.badRequest()
+                .body(new ExceptionResponse("VALIDATION_ERROR", errorMessage));
+    }
 }
